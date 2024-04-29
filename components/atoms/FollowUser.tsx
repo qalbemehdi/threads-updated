@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React,{ experimental_useOptimistic as useOptimistic } from "react";
 import { Button } from "../ui/button";
 import { followUser } from "@/lib/actions/user.actions";
 import { usePathname } from "next/navigation";
@@ -14,8 +14,10 @@ interface Props {
 
 const FollowUser = ({ userId, currentUserId, isFollowing = false }: Props) => {
   const pathname = usePathname();
+  const [optimisticFollow,setOptimisticFollow]=useOptimistic(isFollowing)
 
   const handleClick = async () => {
+    setOptimisticFollow((prev:boolean)=>!prev)
     await followUser({
       followerId: currentUserId,
       followedId: userId,
@@ -29,7 +31,7 @@ const FollowUser = ({ userId, currentUserId, isFollowing = false }: Props) => {
         <Image src="/assets/user.svg" alt="logout" width={16} height={16} />
 
         <p className="text-light-2 max-sm:hidden">
-          {isFollowing ? "Unfollow" : "Follow"}
+          {optimisticFollow ? "Unfollow" : "Follow"}
         </p>
       </div>
     </Button>
