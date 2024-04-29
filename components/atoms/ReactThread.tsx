@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { experimental_useOptimistic as useOptimistic } from "react";
 import { usePathname } from "next/navigation";
 import { addReactToThread } from "@/lib/actions/thread.actions";
 
@@ -21,8 +21,9 @@ const ReactThread = ({
   parentId = null,
 }: Props) => {
   const pathname = usePathname();
-
+  const [optimisticLikes,setOptimisticLikes]=useOptimistic(interactState)
   const handleClick = async () => {
+    setOptimisticLikes((prev:boolean)=>!prev)
     await addReactToThread({
       threadId,
       userId: currentUserId,
@@ -32,7 +33,7 @@ const ReactThread = ({
 
   return (
     <Image
-      src={`/assets/heart-${interactState ? "filled" : "gray"}.svg`}
+      src={`/assets/heart-${optimisticLikes ? "filled" : "gray"}.svg`}
       alt="heart"
       width={24}
       height={24}
